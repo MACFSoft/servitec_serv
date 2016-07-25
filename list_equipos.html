@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+    <meta charset ="utf-8">
+    <meta name    ="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="css/servitec.min.css">
+<link rel="stylesheet" type="text/css" href="css/jquery.mobile.icons.min.css">
+<link rel="stylesheet" type="text/css" href="css/jquery.mobile.structure-1.4.5.min.css">
+  <script src = "js/jquery.min.js" type="text/javascript"></script>
+  <script src = "js/jquery.mobile-1.4.5.js" type="text/javascript"></script>
+
+<table id="listData" border>
+<!-- Encabezado del listado -->
+<thead><tr><th>Buscando html</th></tr></thead>
+<!-- Listado generado -->
+<tbody><tr><td>Esperando html</td></tr></tbody>
+<!-- Listado Base pie -->
+<tfoot><tr><td>Resultados html</td></tr></tfoot>
+</table>
+<progress max="60"></progress>
+<script>
+var DataHTML;
+var Larg=10;
+function Listarequipos(){
+  $.ajax({
+    type: "POST",
+    url: "list_equipos.php",
+    /*data: {
+		 'Uuid_D': Uuid_Device,
+         'Latit': Latit,
+         'Long': Long,
+         'Accur': Accur,
+         'herdi': herdi,
+         'velo': velo
+        }, */
+    dataType : 'json',
+    error : function(jqXHR, status, error) {
+      $("tfoot").html("<tr><td colspan='"+Larg+"'>Algo fallo</td></tr>");
+     console.log(error);
+    },
+    beforeSend:function(){
+      $("tfoot").html("<tr><td colspan='"+Larg+"'>Consultando</td></tr>");
+    },
+    success:function(datalist){
+	  DataHTML='<tr style="background-color: #B5B5B5">';
+	  $.each(datalist[0], function(IDt,valor) {
+        DataHTML+='<th>'+IDt+'</th>';
+        //Larg++;
+      });
+      DataHTML +='</tr>';
+      $("thead").html(DataHTML);
+      $("tfoot td").attr({'colspan':Larg+1});
+      DataHTML="";
+      $.each(datalist, function(idn,linea) {
+        DataHTML +=(idn%2==1)? '<tr style="background-color: #F0F0F0">':'<tr style="background-color: #FFFFFF">';
+        $.each(linea, function(IDt,valor) {
+          DataHTML+='<td>'+valor+'</td>';
+        });
+        DataHTML +='</tr>';
+      });
+      $("tbody").html(DataHTML);
+    }
+  });
+} //Listarequipos
+window.setInterval('Listarequipos();',60000);
+Listarequipos();
+</script>
+
+
